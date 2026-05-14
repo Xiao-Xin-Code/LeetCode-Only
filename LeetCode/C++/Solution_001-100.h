@@ -9,7 +9,7 @@
 namespace Solution {
 	class Solution {
 	public:
-		//https://leetcode.com/problems/two-sum/
+		//两数之和 https://leetcode.com/problems/two-sum/
 		std::vector<int> twoSum(std::vector<int>& nums, int target) {
 			if(nums.size()<=1) return {};	
 			std::unordered_map<int, int> maps;
@@ -24,7 +24,7 @@ namespace Solution {
 			return {};
 		}
 
-		//https://leetcode.com/problems/add-two-numbers/
+		//两数相加 https://leetcode.com/problems/add-two-numbers/
 		ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
 			if(l1 == nullptr && l2 == nullptr) return nullptr;
 			if(l1 == nullptr) return l2;
@@ -55,7 +55,7 @@ namespace Solution {
 			return head;
 		}
 
-		//https://leetcode.com/problems/longest-substring-without-repeating-characters/
+		//无重复字符的最长子串 https://leetcode.com/problems/longest-substring-without-repeating-characters/
 		int lengthOfLongestSubstring(std::string s) {
 			if(s.empty()) return 0;
 			if(s.size() == 1) return 1;
@@ -72,6 +72,11 @@ namespace Solution {
 				max_length = std::max(max_length, right - left + 1);
 			}
 			return max_length;
+		}
+
+		// 两个有序数组的中位数 https://leetcode.com/problems/median-of-two-sorted-arrays/
+		double findMedianSortedArrays(std::vector<int>& nums1, std::vector<int>& nums2) {
+			return 0.0;
 		}
 
 		
