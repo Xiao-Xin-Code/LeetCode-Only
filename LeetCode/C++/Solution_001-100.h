@@ -11,6 +11,7 @@ namespace Solution {
 	public:
 		//https://leetcode.com/problems/two-sum/
 		std::vector<int> twoSum(std::vector<int>& nums, int target) {
+			if(nums.size()<=1) return {};	
 			std::unordered_map<int, int> maps;
 			for (int i = 0;i < nums.size();++i) {
 				int diff = target - nums[i];
@@ -25,6 +26,9 @@ namespace Solution {
 
 		//https://leetcode.com/problems/add-two-numbers/
 		ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+			if(l1 == nullptr && l2 == nullptr) return nullptr;
+			if(l1 == nullptr) return l2;
+			if(l2 == nullptr) return l1;
 			int carry = 0;
 			ListNode* head = nullptr;
 			ListNode* tail = nullptr;
@@ -53,7 +57,21 @@ namespace Solution {
 
 		//https://leetcode.com/problems/longest-substring-without-repeating-characters/
 		int lengthOfLongestSubstring(std::string s) {
-			return 0;
+			if(s.empty()) return 0;
+			if(s.size() == 1) return 1;
+			std::unordered_map<char, int> charindex;
+			int left = 0, right = 0;
+			int max_length = 0;
+			for(int i = 0; i < s.size(); ++i){
+				auto it = charindex.find(s[i]);
+				if(it != charindex.end() && it->second >= left){
+					left = it->second + 1;
+				}
+				charindex[s[i]] = i;
+				right = i;
+				max_length = std::max(max_length, right - left + 1);
+			}
+			return max_length;
 		}
 
 		
