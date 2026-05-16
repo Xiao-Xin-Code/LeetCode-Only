@@ -1,5 +1,7 @@
 #pragma once
 
+#include <climits>
+#include <cstdint>
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -9,7 +11,7 @@
 namespace Solution {
 	class Solution {
 	public:
-		//两数之和 https://leetcode.com/problems/two-sum/
+		//001-两数之和 https://leetcode.com/problems/two-sum/
 		std::vector<int> twoSum(std::vector<int>& nums, int target) {
 			if(nums.size()<=1) return {};	
 			std::unordered_map<int, int> maps;
@@ -24,7 +26,7 @@ namespace Solution {
 			return {};
 		}
 
-		//两数相加 https://leetcode.com/problems/add-two-numbers/
+		//002-两数相加 https://leetcode.com/problems/add-two-numbers/
 		ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
 			if(l1 == nullptr && l2 == nullptr) return nullptr;
 			if(l1 == nullptr) return l2;
@@ -55,7 +57,7 @@ namespace Solution {
 			return head;
 		}
 
-		//无重复字符的最长子串 https://leetcode.com/problems/longest-substring-without-repeating-characters/
+		//003-无重复字符的最长子串 https://leetcode.com/problems/longest-substring-without-repeating-characters/
 		int lengthOfLongestSubstring(std::string s) {
 			if(s.empty()) return 0;
 			if(s.size() == 1) return 1;
@@ -74,7 +76,7 @@ namespace Solution {
 			return max_length;
 		}
 
-		//两个有序数组的中位数 https://leetcode.com/problems/median-of-two-sorted-arrays/
+		//004-两个有序数组的中位数 https://leetcode.com/problems/median-of-two-sorted-arrays/
 		double findMedianSortedArrays(std::vector<int>& nums1, std::vector<int>& nums2) {
 			if(nums1.empty() && nums2.empty()) return 0.0;
 			if(nums1.size() > nums2.size()) findMedianSortedArrays(nums2, nums1);
@@ -106,7 +108,7 @@ namespace Solution {
 			return 0.0;
 		}
 
-		//最长回文子串 https://leetcode.com/problems/longest-palindromic-substring/
+		//005-最长回文子串 https://leetcode.com/problems/longest-palindromic-substring/
 		//思路：
 		//首先就是对于（奇数）回文，对于一个以C为中心的回文，在范围内的任意一个I，会存在一个J，满足（I+J）/ 2 = C
 		//所以对于Manacher算法就是利用奇数型的这个性质，来优化时间复杂度的
@@ -155,11 +157,149 @@ namespace Solution {
 			return s.substr((max_center - max_length + 1) / 2, max_length - 1);
 		}
 
-		//Z字形变换 https://leetcode.com/problems/zigzag-conversion/
-		//空白方法
+		//006-ZZ字形变换 https://leetcode.com/problems/zigzag-conversion/
 		std::string convert(std::string s, int numRows) {
-			return s;
+			std::vector<std::string> rows(numRows, "");
+			int cycle = (numRows - 1) * 2;
+			for(int i = 0; i < s.size(); ++i){
+				int offset = i % cycle;
+				int index = offset < numRows ? offset : cycle - offset;
+				rows[index] += s[i];
+			}
+			std::string result;
+			for(const auto& row : rows){
+				result += row;
+			}
+			return result;
 		}
+
+		//007-整数反转 https://leetcode.com/problems/reverse-integer/
+		int reverse(int x) {
+			if(x == 0) return 0;
+			int result = 0;
+			while(x!=0){
+				int pop = x % 10;
+				x /= 10;
+				if(x > 0 && result > (INT_MAX - pop)/10) return 0;
+				if(x < 0 && result < (INT_MIN - pop)/10) return 0;
+				result = result * 10 + pop;
+			}
+			return result;
+		}
+
+		//008-字符串转换整数 (atoi) https://leetcode.com/problems/string-to-integer-atoi/
+		int myAtoi(std::string str) {
+			if(str.empty()) return 0;
+			int sign = 1;
+			int result = 0;
+			bool isBegin = false;
+			for(int i = 0; i < str.size(); ++i){
+				if(str[i] >= '0' && str[i] <= '9'){
+					isBegin = true;
+					int pop = str[i] - '0';
+					if(sign == 1 && result > (INT_MAX - pop) / 10) return INT_MAX;
+					if(sign == -1 && -result < (INT_MIN + pop) / 10) return INT_MIN;
+					result = result * 10 + pop;
+				}
+				else if(i == 0){
+					if(str[i] == '+' || str[i] == '-'){
+						sign = str[i] == '-' ? -1 : 1;
+						isBegin = true;
+					}
+					else if(str[i] == ' '){
+						continue;
+					}
+					else{
+						break;
+					}
+				}
+				else if(!isBegin && str[i] == ' '){
+					continue;
+				}
+				else{
+					break;
+				}
+			}
+			return result * sign;
+		}
+
+		//009-回文数 https://leetcode.com/problems/palindrome-number/
+		bool isPalindrome(int x) {
+			if(x < 0) return false;
+			if(x == 0) return true;
+			int right = 0;
+			while(x > right){
+				right = right * 10 + x % 10;
+				if(x == right) return true;
+				x /= 10;
+			}
+			if(x == right) return true;
+			return false;
+		}
+		
+		//010-正则表达式匹配 https://leetcode.com/problems/regular-expression-matching/
+		bool isMatch(std::string s, std::string p) {
+			return false;
+		}
+		
+		//011-盛最多水的容器 https://leetcode.com/problems/container-with-most-water/
+		int maxArea(std::vector<int>& height) {
+			int left = 0,right = height.size() - 1;
+			int maxHeight = 0;
+			while(left < right){
+				int count = right - left;
+				int curHeight = std::min(height[left],height[right]) * count;
+				int maxHeight = std::max(maxHeight, curHeight);
+				if(height[left] < height[right]){
+					left++;
+				}
+				else{
+					right--;
+				}
+			}
+			return maxHeight;
+		}
+
+		//012-整数转罗马数字 https://leetcode.com/problems/integer-to-roman/
+		std::string intToRoman(int x) {
+			std::unordered_map<int, std::string> map = {{1000, "M"},{900, "CM"},{500, "D"},{400, "CD"},
+				{400, "CD"},{100, "C"},{90, "XC"},{50, "L"},{40, "XL"},{10, "X"},{9, "IX"},
+				{5, "V"},{4, "IV"},{1, "I"}
+			};
+			std::string result;
+			for(const auto& pair : map){
+				if(x >= pair.first){
+					int count = x / pair.first;
+					x %= pair.first;
+					for(int i = 0; i < count; ++i){
+						result.append(pair.second);
+					}
+				}
+			}
+			return result;
+		}
+
+		//013-罗马数字转整数 https://leetcode.com/problems/roman-to-integer/
+		int romanToInt(std::string s) {
+			std::unordered_map<std::string,int> map = {{"I",1}, {"V",5}, {"X",10}, {"L",50}, {"C",100}, {"D",500}, {"M",1000}};
+			int index = 0;
+			int result = 0;
+			while(index < s.size()){
+				if(map.find(s.substr(index,2)) != map.end()){
+					result += map[s.substr(index,2)];
+					index += 2;
+				}
+				else if(map.find(s.substr(index,1)) != map.end()){
+					result += map[s.substr(index,1)];
+					index++;
+				}
+				else{
+					return 0;
+				}
+			}
+			return result;
+		}
+
 
 	};
 }
