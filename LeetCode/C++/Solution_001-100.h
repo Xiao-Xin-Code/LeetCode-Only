@@ -7,6 +7,7 @@
 #include <string>
 
 #include "Extension.h"
+#include "Sort.h"
 
 namespace Solution {
 	class Solution {
@@ -300,6 +301,26 @@ namespace Solution {
 			return result;
 		}
 
+		//014-最长公共前缀 https://leetcode.com/problems/longest-common-prefix/
+		std::string longestCommonPrefix(std::vector<std::string>& strs) {
+			if(strs.empty()) return "";
+			std::string result;
+			for(int i = 0; i < strs[0].length(); ++i){
+				for(int j = 1; j < strs.size(); ++j){
+					if(strs[j][i] != strs[0][i]){
+						return result;
+					}
+				}
+				result += strs[0][i];
+			}
+			return result;
+		}
+
+		//015-三数之和 https://leetcode.com/problems/3sum/
+		std::vector<std::vector<int>> threeSum(std::vector<int>& nums) {
+			
+			return {};
+		}
 
 	};
 }
