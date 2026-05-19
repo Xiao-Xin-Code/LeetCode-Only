@@ -5,6 +5,8 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <queue>
+#include <stack>
 
 #include "Extension.h"
 #include "Sort.h"
@@ -125,6 +127,7 @@ namespace Solution {
 		//这样就计算出当前I的回文半径，
 		//之后就是更新数据：为了让后续的遍历尽可能使用到对称性，所以我们应该保持让R尽量向后扩展，也就有了当前I的右边界超出原本的记录，就更新当前记录的中心与半径
 		std::string longestPalindrome(std::string s) {
+			if(s.empty()||s.size() == 1) return s;
 			std::string t = "$#";
 			for(char c : s){
 				t += c;
@@ -160,6 +163,7 @@ namespace Solution {
 
 		//006-ZZ字形变换 https://leetcode.com/problems/zigzag-conversion/
 		std::string convert(std::string s, int numRows) {
+			if(s.empty()||numRows == 1) return s;
 			std::vector<std::string> rows(numRows, "");
 			int cycle = (numRows - 1) * 2;
 			for(int i = 0; i < s.size(); ++i){
@@ -343,6 +347,133 @@ namespace Solution {
 			}
 			return result;
 		}
+
+		//016-三数之和最近 https https://leetcode.com/problems/3sum-closest/
+		int threeSumClosest(std::vector<int>& nums, int target) {
+			std::sort(nums.begin(), nums.end());
+			int closest = nums[0] + nums[1] + nums[2];
+			for(int i = 0; i < nums.size() - 2; ++i){
+				if(i > 0 && nums[i] == nums[i - 1]) continue;
+				int left = i + 1;
+				int right = nums.size() - 1;
+				while(left < right){
+					int sum = nums[i] + nums[left] + nums[right];
+					if(std::abs(sum - target) < std::abs(closest - target)){
+						closest = sum;
+					}
+					else if(sum == target){
+						return sum;
+					}
+					else if(sum < target){
+						left++;
+					}
+					else{
+						right--;
+					}
+				}
+			}
+			return closest;
+		}
+
+		//017-电话号码的字母组合 https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+		std::vector<std::string> letterCombinations(std::string digits) {
+			if(digits.empty()) return {};
+			std::unordered_map<char, std::string> map = {{'2', "abc"}, {'3', "def"}, {'4', "ghi"}, {'5', "jkl"}, {'6', "mno"}, {'7', "pqrs"}, {'8', "tuv"}, {'9', "wxyz"}};
+			std::queue<std::string> queue;
+			queue.push("");
+			for(char c : digits){
+				int size = queue.size();
+				std::string cur = map[c];
+				for(int i = 0; i < size; ++i){
+					std::string current = queue.front();
+					queue.pop();
+					for(char d : cur){
+						queue.push(current + d);
+					}
+				}
+			}
+			std::vector<std::string> result;
+			while(!queue.empty()){
+				result.push_back(queue.front());
+				queue.pop();
+			}
+			return result;		
+		}
+
+		//018-四数之和 https://leetcode.com/problems/4sum/
+		std::vector<std::vector<int>> fourSum(std::vector<int>& nums, int target){
+			std::sort(nums.begin(), nums.end());
+			std::vector<std::vector<int>> result;
+			for(int i = 0; i < nums.size() - 3; ++i){
+				int cur = target - nums[i];
+				for(int j = i + 1; j < nums.size() - 2; ++j){
+					int current = cur - nums[j];
+					int left = j + 1;
+					int right = nums.size() - 1;
+					while(left < right){
+						int sum = nums[left] + nums[right];
+						if(sum == current){
+							result.push_back({nums[i], nums[j], nums[left], nums[right]});
+							while(left < right && nums[left + 1] == nums[left]) left++;
+							while(left < right && nums[right - 1] == nums[right]) right--;
+							left++;
+							right--;
+						}
+						else if(sum < current){
+							left++;
+						}
+						else{
+							right--;
+						}
+					}
+				}
+			}
+			return result;
+		}
+
+		//019-删除链表的倒数第N个节点 https://leetcode.com/problems/remove-nth-node-from-end-of-list/
+		ListNode* removeNthFromEnd(ListNode* head, int n){
+			if(head == nullptr) return nullptr;
+			ListNode* fast = head;
+			ListNode* slow = head;
+			for(int i = 0; i < n; ++i){
+				if(fast->next == nullptr) return head->next;
+				else fast = fast->next;
+			}
+			while(fast->next != nullptr){
+				slow = slow->next;
+				fast = fast->next;
+			}
+			slow->next = slow->next->next;
+			return head;
+		}
+
+		//020-有效括号 https://leetcode.com/problems/valid-parentheses/
+		bool isValid(std::string s) {
+			if(s.empty()) return true;
+			if(s.size() % 2 != 0) return false;
+			std::stack<char> stackLeft;
+			for(char c : s){
+				if(c == '(' || c == '[' || c == '{'){
+					stackLeft.push(c);
+				}
+				else{
+					if(stackLeft.empty()) return false;
+					else if(stackLeft.top() == '(' && c == ')'){
+						stackLeft.pop();
+					}
+					else if(stackLeft.top() == '[' && c == ']'){
+						stackLeft.pop();
+					}
+					else if(stackLeft.top() == '{' && c == '}'){
+						stackLeft.pop();
+					}
+					else return false;
+				}
+			}
+			return stackLeft.empty();
+		}
+
 
 	};
 }
