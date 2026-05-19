@@ -474,6 +474,59 @@ namespace Solution {
 			return stackLeft.empty();
 		}
 
+		//021-合并两个有序链表 https://leetcode.com/problems/merge-two-sorted-lists/
+		ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+			if(l1 == nullptr) return l2;
+			if(l2 == nullptr) return l1;
+			ListNode* head = l1->val < l2->val ? l1 : l2;
+			ListNode* tail = head;
+			while(l1 != nullptr && l2 != nullptr){
+				if(l1->val < l2->val){
+					tail->next = l1;
+					l1 = l1->next;
+					tail = tail->next;
+				}
+				else{
+					tail->next = l2;
+					l2 = l2->next;
+					tail = tail->next;
+				}
+			}
+			tail->next = l1 != nullptr ? l1 : l2;
+			return head;
+		}
+
+		//022-括号生成 https://leetcode.com/problems/generate-parentheses/
+		std::vector<std::string> generateParenthesis(int n) {
+			if(n == 0) return {};
+			std::queue<std::tuple<std::string,int,int>> queue;
+			queue.push({"",0,0});
+			std::vector<std::string> result;
+			while(!queue.empty()){
+				auto [str,left,right] = queue.front();
+				queue.pop();
+				if(str.length() == n * 2){
+					result.push_back(str);
+					continue;
+				}
+				else{
+					if(left < n){
+						queue.push({str + '(',left + 1,right});
+					}
+					if(right < left){
+						queue.push({str + ')',left,right + 1});
+					}
+				}
+			}
+			return result;
+		}
+
+		//023-合并K个排序链表 https://leetcode.com/problems/merge-k-sorted-lists/
+		ListNode* mergeKLists(std::vector<ListNode*>& lists) {
+			if(lists.empty()) return nullptr;
+			
+			return nullptr;
+		}
 
 	};
 }
