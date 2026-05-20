@@ -524,10 +524,259 @@ namespace Solution {
 		//023-合并K个排序链表 https://leetcode.com/problems/merge-k-sorted-lists/
 		ListNode* mergeKLists(std::vector<ListNode*>& lists) {
 			if(lists.empty()) return nullptr;
-			
+			ListNode* head = lists[0];
+			for(int i = 1; i < lists.size(); ++i){
+				head = mergeTwoLists(head, lists[i]);
+			}
+			return head;
+		}
+
+		//024-交换链表中的节点 https://leetcode.com/problems/swap-nodes-in-pairs/
+		ListNode* swapPairs(ListNode* head) {
+			ListNode* l1 = head;
+			ListNode* l2 = head->next;
+			if(l2 == nullptr) return l1;
+			l1->next = swapPairs(l2->next);
+			l2->next = l1;
 			return nullptr;
 		}
 
+		//025-K个一组反转链表 https://leetcode.com/problems/reverse-nodes-in-k-group/
+		ListNode* reverseKGroup(ListNode* head, int k) {
+			ListNode* l1 = head;
+			ListNode* l2 = head;
+			int n = 0;
+			while(l2!=nullptr&&n<k){
+				l2 = l2->next;
+				n++;
+			}
+			if(n > 0) return head;
+			ListNode* l3 = l1->next;
+			l1->next = reverseKGroup(l2->next, k);
+			l2->next = l3;
+			return l2;
+		}
+
+		//026-从已排序数组中移除重复元素 https://leetcode.com/problems/remove-duplicates-from-sorted-array/
+		int removeDuplicates(std::vector<int>& nums) {
+			int count = 1;
+			for(int i = 1; i < nums.size(); ++i){
+				if(nums[i] != nums[i-1]){
+					nums[count] = nums[i];
+					count++;
+				}
+			}
+			return count;
+		}
+
+		//027-移除元素 https://leetcode.com/problems/remove-element/
+		int removeElement(std::vector<int>& nums, int val) {
+			int count = 0;
+			for(int i = 0; i < nums.size(); ++i){
+				if(nums[i] != val){
+					nums[count] = nums[i];
+					count++;
+				}
+			}
+			return count;
+		}
+		
+		//028-实现strStr() https://leetcode.com/problems/implement-strstr/
+		int strStr(std::string haystack, std::string needle) {
+			for(int  i = 0; i <= haystack.size() - needle.size(); ++i){
+				if(haystack.substr(i,needle.size()) == needle){
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		//029-整除 https://leetcode.com/problems/divide-two-integers/
+		int divide(int dividend, int divisor) {
+			int count = 0;
+			while(dividend >= divisor){
+				int tempDivisor = divisor;
+				int curCount = 1;
+				while(dividend - tempDivisor >= tempDivisor){
+					tempDivisor += tempDivisor;
+					curCount += curCount;
+				}
+				dividend -= tempDivisor;
+				count += curCount;
+			}
+			return count;
+		}
+
+		//030-串联所有单词的子串 https://leetcode.com/problems/substring-with-concatenation-of-all-words/
+		std::vector<int> findSubstring(std::string s, std::vector<std::string>& words) {
+			std::unordered_map<std::string,int> wordMap;
+			std::vector<int> result;
+			int windowSize = 0;
+			for(int i = 0; i < words.size(); ++i){
+				wordMap[words[i]]++;
+				windowSize += words[i].size();
+			}
+			for(int i = 0; i <= s.size() - windowSize; ++i){
+				int cur = i;
+				std::unordered_map<std::string,int> tempMap = wordMap;
+				for(int j = cur; j < cur + windowSize;){
+					bool isMatch = false;
+					for(auto it = tempMap.begin(); it != tempMap.end(); ++it){
+						if(it->second > 0){
+							isMatch = true;
+							for(int w = 0; w < it->first.size(); ++w){
+								if(s[j + w] != it->first[w]){
+									isMatch = false;
+									break;
+								}
+							}
+							if(isMatch){
+								tempMap[it->first]--;
+								j += it->first.size();
+								break;
+							}
+						}
+					}
+					if(!isMatch){
+						break;
+					}
+				}
+				bool isAll = true;
+				for(auto it = tempMap.begin(); it != tempMap.end(); ++it){
+					if(it->second != 0){
+						isAll = false;
+						break;
+					}
+				}
+				if(isAll){
+					result.push_back(cur);
+				}
+			}
+			return result;
+		}
+
+		//031-下一个排列 https://leetcode.com/problems/next-permutation/
+		void nextPermutation(std::vector<int>& nums) {
+			int index = nums.size() - 2;
+			while(index >= 0 && nums[index] >= nums[index + 1]) index--;
+
+			if(index >= 0){
+				int i = nums.size() - 1;
+				while(i > index && nums[i] <= nums[index]) i--;
+				std::swap(nums[index],nums[i]);
+			}
+			std::reverse(nums.begin() + index + 1, nums.end());
+		}
+
+		//032-最长有效括号 https://leetcode.com/problems/longest-valid-parentheses/
+		int longestValidParentheses(std::string s) {
+			int max = 0;
+			std::stack<int> stack;
+			stack.push(-1);
+			for(int i = 0; i < s.size(); ++i){
+				if(s[i] == '('){
+					stack.push(i);
+				}
+				else{
+					stack.pop();
+					if(stack.empty()) stack.push(i);
+					else max = std::max(max, i - stack.top());
+				}
+			}
+			return max;
+		}
+
+		//033-搜索旋转排序数组 https://leetcode.com/problems/search-in-rotated-sorted-array/
+		int search(std::vector<int>& nums, int target) {
+			int left = 0;
+			int right = nums.size() - 1;
+			while(left <= right){
+				int mid = (left + right) / 2;
+				if(nums[mid] == target) return mid;
+				if(nums[left] <= nums[mid]){
+					if(nums[left] <= target && target <= nums[mid]){
+						right = mid - 1;
+					}
+					else
+					{
+						left = mid + 1;
+					}
+				}
+				else{
+					if(nums[mid] <= target && target <= nums[right]){
+						left = mid + 1;
+					}
+					else{
+						right = mid - 1;
+					}
+				}
+			}
+			return -1;
+		}
+
+		//034-在排序数组中查找元素的第一个和最后一个位置 https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+		std::vector<int> searchRange(std::vector<int>& nums, int target) {
+			int left = 0,right = nums.size() - 1;
+			std::vector<int> result = {-1,-1};
+			int l = left,r = right;
+			while(l <= r){
+				int mid = (l + r) / 2;
+				if(nums[mid] >= target){
+					if(nums[mid] == target) result[0] = mid;
+					r = mid - 1;
+				}
+				else{
+					l = mid + 1;
+				}
+			}
+			l = left,r = right;
+			while(l <= r){
+				int mid = (l + r) / 2;
+				if(nums[mid] <= target){
+					if(nums[mid] == target) result[1] = mid;
+					l = mid + 1;
+				}
+				else{
+					r = mid - 1;
+				}
+			}
+			return result;
+		}
+
+		//035-搜索插入位置 https://leetcode.com/problems/search-insert-position/
+		int searchInsert(std::vector<int>& nums, int target) {
+			int left = 0,right = nums.size() - 1;
+			while(left <= right){
+				int mid = (left + right) / 2;
+				if(nums[mid] == target) return mid;
+				else if(nums[mid] < target) left = mid + 1;
+				else right = mid - 1;
+			}
+			return left;
+		}
+
+		//036-有效的数独 https://leetcode.com/problems/valid-sudoku/
+		bool isValidSudoku(std::vector<std::vector<char>>& board) {
+			bool row[9][9];
+			bool col[9][9];
+			bool box[9][9];
+			for(int i = 0; i < board.size(); ++i){
+				for(int j = 0; j < board[i].size(); ++j){
+					int index = board[i][j] - '1';
+					if(row[i][index]) return false;
+					if(col[j][index]) return false;
+					if(box[j / 3 * 3 + i / 3][index]) return false;
+					row[i][index] = true;
+					col[j][index] = true;
+					box[j / 3 * 3 + i / 3][index] = true;
+				}
+			}
+			return true;
+		}
+
+
+
+		
 	};
 }
 
