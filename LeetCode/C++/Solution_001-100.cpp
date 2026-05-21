@@ -1,7 +1,7 @@
 #pragma once
 
+#include <algorithm>
 #include <climits>
-#include <cstdint>
 #include <vector>
 #include <unordered_map>
 #include <string>
@@ -9,7 +9,7 @@
 #include <stack>
 
 #include "Extension.h"
-#include "Sort.h"
+#include "SolutionHelper_001-100.cpp"
 
 namespace Solution {
 	class Solution {
@@ -503,7 +503,10 @@ namespace Solution {
 			queue.push({"",0,0});
 			std::vector<std::string> result;
 			while(!queue.empty()){
-				auto [str,left,right] = queue.front();
+				auto cur = queue.front();
+				std::string str = std::get<0>(cur);
+				int left = std::get<1>(cur);
+				int right = std::get<2>(cur);
 				queue.pop();
 				if(str.length() == n * 2){
 					result.push_back(str);
@@ -774,8 +777,46 @@ namespace Solution {
 			return true;
 		}
 
+		//037-解数独 https://leetcode.com/problems/sudoku-solver/
+		void solveSudoku(std::vector<std::vector<char>>& board) {
 
+		}
 
+		//038-外观数列 https://leetcode.com/problems/count-and-say/
+		std::string countAndSay(int n) {
+			if(n == 1) return "1";
+			std::string pre = countAndSay(n - 1);
+			std::string result;
+			int count = 1;
+			for(int i = 1; i < n; ++i){
+				if(pre[i] == pre[i - 1]){
+					count++;
+				}
+				else{
+					result += std::to_string(count) + pre[i - 1];
+					count = 1;
+				}
+			}
+			result += std::to_string(count) + pre.back();
+			return result;
+
+		}
+
+		//039-组合总和 https://leetcode.com/problems/combination-sum/
+		std::vector<std::vector<int>> combinationSum(std::vector<int>& candidates, int target) {
+			std::vector<std::vector<int>> result;
+			sort(candidates.begin(),candidates.end());
+			combinationSumHelper(candidates,target,0,{},result);
+			return result;
+		}
+
+		//040-组合总和 II https://leetcode.com/problems/combination-sum-ii/
+		std::vector<std::vector<int>> combinationSum2(std::vector<int>& candidates, int target) {
+			std::vector<std::vector<int>> result;
+			sort(candidates.begin(),candidates.end());
+			combinationSum2Helper(candidates,target,0,{},result);
+			return result;
+		}
 		
 	};
 }
