@@ -944,9 +944,7 @@ namespace Solution {
 					}
 				}
 			}
-			while(!result.empty() && result[0] == '0') {
-				result.erase(result.begin());
-			}
+			result.erase(0,result.find_first_not_of("0"));
 			return result.empty() ? "0" : result;
 		}
 
