@@ -15,9 +15,9 @@ namespace Solution {
 	public:
 		//001-两数之和 https://leetcode.com/problems/two-sum/
 		std::vector<int> twoSum(std::vector<int>& nums, int target) {
-			if(nums.size()<=1) return {};	
+			if(nums.size() <= 1) return {};	
 			std::unordered_map<int, int> maps;
-			for (int i = 0;i < nums.size();++i) {
+			for (int i = 0; i < nums.size(); ++i) {
 				int diff = target - nums[i];
 				auto it = maps.find(diff);
 				if(it != maps.end()){
@@ -778,7 +778,37 @@ namespace Solution {
 
 		//037-解数独 https://leetcode.com/problems/sudoku-solver/
 		void solveSudoku(std::vector<std::vector<char>>& board) {
-
+			solveSudokuHelper(board);
+		}
+	private:
+		void solveSudokuHelper(std::vector<std::vector<char>>& board){
+			for(int i = 0; i < board.size(); ++i){
+				for(int j = 0; j < board[i].size(); ++j){
+					if(board[i][j] != '.') continue;
+					for(char c = '1'; c <= '9'; ++c){
+						bool isValid = true;
+						for(int k = 0; k < 9; ++k){
+							if(board[i][k] != '.' && board[i][k] == c) {
+								isValid = false;
+								break;
+							}
+							if(board[k][j] != '.' && board[k][j] == c){
+								isValid = false;
+								break;
+							}
+							if(board[i / 3 * 3 + k / 3][j / 3 * 3 + k % 3] != '.' && board[i / 3 * 3 + k / 3][j / 3 * 3 + k % 3] == c){
+								isValid = false;
+								break;
+							}
+						}
+						if(isValid){
+							board[i][j] = c;
+							solveSudokuHelper(board);
+							board[i][j] = '.';
+						}
+					}
+				}
+			}
 		}
 
 		//038-外观数列 https://leetcode.com/problems/count-and-say/
