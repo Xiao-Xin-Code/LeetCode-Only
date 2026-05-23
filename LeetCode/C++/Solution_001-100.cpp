@@ -160,7 +160,7 @@ namespace Solution {
 			return s.substr((max_center - max_length + 1) / 2, max_length - 1);
 		}
 
-		//006-ZZ字形变换 https://leetcode.com/problems/zigzag-conversion/
+		//006-Z字形变换 https://leetcode.com/problems/zigzag-conversion/
 		std::string convert(std::string s, int numRows) {
 			if(s.empty()||numRows == 1) return s;
 			std::vector<std::string> rows(numRows, "");
@@ -875,6 +875,97 @@ namespace Solution {
 				}
 				curResult.pop_back();
 			}
+		}
+
+		//041-缺失的第一个正数 https://leetcode.com/problems/first-missing-positive/
+		int firstMissingPositive(std::vector<int>& nums) {
+			for(int i = 0; i < nums.size(); ++i){
+				if(nums[i] < 0) nums[i] = 0;
+			}
+			for(int i = 0; i < nums.size(); ++i){
+				if(nums[i] != 0 && abs(nums[i]) <= nums.size()){
+					nums[abs(nums[i]) - 1] = -abs(nums[abs(nums[i]) - 1]);
+				}
+			}
+			for(int i = 0; i < nums.size(); ++i){
+				if(nums[i] > 0) return i + 1;
+			}
+			return nums.size() + 1;
+		}
+
+		//042-接雨水 https://leetcode.com/problems/trapping-rain-water/
+		int trap(std::vector<int>& height) {
+			int left = 0;
+			int right = height.size() - 1;
+			int total = 0;
+			int leftHeight = height[left];
+			int rightHeight = height[right];
+			while(left < right){
+				while(left < right && height[left] == 0) left++;
+				while(left < right && height[right] == 0) right--;
+				if(left >= right) break;
+				leftHeight = height[left];
+				rightHeight = height[right];
+				if(leftHeight <= rightHeight){
+					left++;
+					while(left < right && height[left] < leftHeight){
+						total += leftHeight - height[left];
+						left++;
+					}
+					leftHeight = height[left];
+				}
+				else{
+					right--;
+					while(left < right && height[right] < rightHeight){
+						total += rightHeight - height[right];
+						right--;
+					}
+					rightHeight = height[right];
+				}
+			}
+			return total;
+		}
+
+		//043-乘字符串 https://leetcode.com/problems/multiply-strings/
+		std::string multiply(std::string num1, std::string num2) {
+			std::string result(num1.length() + num2.length(),'0');
+			for(int i = num2.length() - 1; i >= 0; --i){
+				for(int j = num1.length() - 1; j >= 0; --j){
+					int mul = (num2[i] - '0') * (num1[j] - '0');
+					int sum = mul + (result[i + j + 1] - '0');
+					result[i + j + 1] = sum % 10 + '0';
+					int carry = sum / 10;
+					int index = i + j;
+					while(carry > 0 && index >= 0){
+						int cur = (result[index] - '0') + carry;
+						result[index] = cur % 10 + '0';
+						carry = cur / 10;
+						index--;
+					}
+				}
+			}
+			while(!result.empty() && result[0] == '0') {
+				result.erase(result.begin());
+			}
+			return result.empty() ? "0" : result;
+		}
+
+		//044-通配符匹配 https://leetcode.com/problems/wildcard-matching/
+		bool isMatchWildcard(std::string s, std::string p) {
+			return false;
+		}
+
+		//045-跳跃游戏II https://leetcode.com/problems/jump-game-ii/
+		int jump(std::vector<int>& nums) {
+			int count = 0,currentEnd = 0,farthest = 0;
+			for(int i = 0; i < nums.size() - 1; ++i){
+				farthest = std::max(farthest,i + nums[i]);
+				if(i == currentEnd){
+					currentEnd = farthest;
+					count++;
+				}
+			}
+			return count;
 		}
 
 
