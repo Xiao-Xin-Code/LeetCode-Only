@@ -877,6 +877,7 @@ namespace Solution {
 			}
 		}
 
+	public:
 		//041-缺失的第一个正数 https://leetcode.com/problems/first-missing-positive/
 		int firstMissingPositive(std::vector<int>& nums) {
 			for(int i = 0; i < nums.size(); ++i){
@@ -966,8 +967,157 @@ namespace Solution {
 			return count;
 		}
 
+		//046-全排列 https://leetcode.com/problems/permutations/
+		std::vector<std::vector<int>> permute(std::vector<int>& nums) {
+			std::vector<std::vector<int>> result;
+			permuteHelper(nums, std::vector<bool>(nums.size(),false), std::vector<int>(),result);
+			return result;
+		}
+	private:
+		void permuteHelper(std::vector<int>& nums,std::vector<bool> usedFrag,std::vector<int> curResult,std::vector<std::vector<int>>& result){
+			if(curResult.size() == nums.size()){
+				result.push_back(curResult);
+				return;
+			}
+			for(int i = 0; i < nums.size(); ++i){
+				if(usedFrag[i]) continue;
+				curResult.push_back(nums[i]);
+				usedFrag[i] = true;
+				permuteHelper(nums,usedFrag,curResult,result);
+				usedFrag[i] = false;
+				curResult.pop_back();
+			}
+		}
 
+	public:
+		//047-全排列II https://leetcode.com/problems/permutations-ii/
+		std::vector<std::vector<int>> permuteUnique(std::vector<int>& nums) {
+			sort(nums.begin(),nums.end());
+			std::vector<std::vector<int>> result;
+			permuteUniqueHelper(nums, std::vector<bool>(nums.size(),false), std::vector<int>(),result);
+			return result;
+		}
+	private:
+		void permuteUniqueHelper(std::vector<int>& nums,std::vector<bool> usedFrag,std::vector<int> curResult,std::vector<std::vector<int>>& result){
+			if(curResult.size() == nums.size()){
+				result.push_back(curResult);
+				return;
+			}
+			for(int i = 0; i < nums.size(); ++i){
+				if(usedFrag[i]) continue;
+				if(i > 0 && nums[i] == nums[i - 1] && !usedFrag[i - 1]) continue;
+				curResult.push_back(nums[i]);
+				usedFrag[i] = true;
+				permuteUniqueHelper(nums,usedFrag,curResult,result);
+				usedFrag[i] = false;
+				curResult.pop_back();
+			}
+		}
+
+	public:
+		//048-旋转图像 https://leetcode.com/problems/rotate-image/
+		void rotate(std::vector<std::vector<int>>& matrix) {
+			int left = 0,right = matrix.size() - 1;
+			while(left < right){
+				for(int i = 0; i <= right - left; ++i){
+					int temp = matrix[left][left + i];
+					matrix[left][left + i] = matrix[right - i][left];
+					matrix[right - i][left] = matrix[right][right - i];
+					matrix[right][right - i] = matrix[left + i][right];
+					matrix[left + i][right] = temp;
+				}
+				left++;
+				right--;
+			}
+			
+		}
+
+		//049 字母异位词分组 https://leetcode.com/problems/group-anagrams/
+		std::vector<std::vector<std::string>> groupAnagrams(std::vector<std::string>& strs) {
+			std::vector<std::vector<std::string>> result;
+			std::unordered_map<std::string,std::vector<std::string>> map;
+			for(int i = 0; i < strs.size(); ++i){
+				std::string temp = strs[i];
+				sort(temp.begin(),temp.end());
+				map[temp].push_back(strs[i]);
+			}
+			for(auto it = map.begin(); it != map.end(); ++it){
+				result.push_back(it->second);
+			}
+			return result;
+		}
 		
+		//050-Power(x,n) https://leetcode.com/problems/powx-n/
+		double myPow(double x, int n) {
+			if(n == 0) return 1.0;
+			if(x == 1.0 || n == 1) return x;
+			int absN = std::abs(n);
+			double result = 1.0;
+			while(absN > 0){
+				if(absN % 2 == 1){
+					result *= x;
+				}
+				x *= x;
+				absN /= 2;
+			}
+			return n > 0 ? result : 1.0 / result;
+		}
+
+		//051-N皇后 https://leetcode.com/problems/n-queens/
+		std::vector<std::vector<std::string>> solveNQueens(int n) {
+			std::vector<std::vector<std::string>> results;
+			std::vector<std::vector<std::string>> board(n,std::vector<std::string>(n,""));
+			int maxcount = 0;
+			solveNQueensHelper(0,n,0,maxcount,results,board);
+			return results;
+		}
+	private:
+		void solveNQueensHelper(int row,int n,int count,int& maxcount,std::vector<std::vector<std::string>>& results,std::vector<std::vector<std::string>> board){
+			if(row == n){
+				if(count > maxcount){
+					maxcount = count;
+					results = board;
+				} 
+				return;
+			}
+
+			for(int i = 0; i < n; ++i){
+				if(board[row][i] != "") continue;
+				board[row][i] = "Q";
+				std::vector<std::vector<int>> frags; 
+				//行
+				for(int h = 0; h < n; ++h){
+					if(board[row][h] != "") continue;
+					board[row][h] = ".";
+					frags.push_back({row,h});
+				}
+				//列
+				for(int l = row; l < n; ++l){
+					if(board[l][i] != "") continue;
+					board[l][i] = ".";
+					frags.push_back({l,i});
+				}
+				//左下
+				for(int h = row + 1,l = i - 1; h < n && l >= 0; ++h,--l){
+					if(board[h][l] != "") continue;
+					board[h][l] = ".";
+					frags.push_back({h,l});
+				}
+				//右下
+				for(int h = row + 1,l = i + 1; h < n && l < n; ++h,++l){
+					if(board[h][l] != "") continue;
+					board[h][l] = ".";
+					frags.push_back({h,l});
+				}
+				solveNQueensHelper(row + 1,n,count + 1,maxcount,results,board);
+				board[row][i] = "";
+				for(auto frag : frags){
+					board[frag[0]][frag[1]] = "";
+				}
+			}
+		}
+		
+
 	};
 }
 
