@@ -1066,57 +1066,91 @@ namespace Solution {
 		//051-N皇后 https://leetcode.com/problems/n-queens/
 		std::vector<std::vector<std::string>> solveNQueens(int n) {
 			std::vector<std::vector<std::string>> results;
-			std::vector<std::vector<std::string>> board(n,std::vector<std::string>(n,""));
-			int maxcount = 0;
-			solveNQueensHelper(0,n,0,maxcount,results,board);
+			std::vector<std::string> board(n,std::string(n,'-'));
+			solveNQueensHelper(results,0,n,board);
 			return results;
 		}
 	private:
-		void solveNQueensHelper(int row,int n,int count,int& maxcount,std::vector<std::vector<std::string>>& results,std::vector<std::vector<std::string>> board){
+		void solveNQueensHelper(std::vector<std::vector<std::string>>& results,int row,int n, std::vector<std::string>& board){
 			if(row == n){
-				if(count > maxcount){
-					maxcount = count;
-					results = board;
-				} 
+				results.push_back(board);
 				return;
 			}
-
 			for(int i = 0; i < n; ++i){
-				if(board[row][i] != "") continue;
-				board[row][i] = "Q";
+				if(board[row][i] != '-') continue;
+				board[row][i] = 'Q';
 				std::vector<std::vector<int>> frags; 
-				//行
-				for(int h = 0; h < n; ++h){
-					if(board[row][h] != "") continue;
-					board[row][h] = ".";
-					frags.push_back({row,h});
-				}
 				//列
-				for(int l = row; l < n; ++l){
-					if(board[l][i] != "") continue;
-					board[l][i] = ".";
+				for(int l = row + 1; l < n; ++l){
+					if(board[l][i] != '-') continue;
+					board[l][i] = '.';
 					frags.push_back({l,i});
 				}
 				//左下
 				for(int h = row + 1,l = i - 1; h < n && l >= 0; ++h,--l){
-					if(board[h][l] != "") continue;
-					board[h][l] = ".";
+					if(board[h][l] != '-') continue;
+					board[h][l] = '.';
 					frags.push_back({h,l});
 				}
 				//右下
 				for(int h = row + 1,l = i + 1; h < n && l < n; ++h,++l){
-					if(board[h][l] != "") continue;
-					board[h][l] = ".";
+					if(board[h][l] != '-') continue;
+					board[h][l] = '.';
 					frags.push_back({h,l});
 				}
-				solveNQueensHelper(row + 1,n,count + 1,maxcount,results,board);
-				board[row][i] = "";
+				solveNQueensHelper(results,row + 1,n,board);
+
+				board[row][i] = '-';
 				for(auto frag : frags){
-					board[frag[0]][frag[1]] = "";
+					board[frag[0]][frag[1]] = '-';
 				}
 			}
 		}
 		
+	public:
+		//052-N皇后II https://leetcode.com/problems/n-queens-ii/
+		int totalNQueens(int n) {
+			std::vector<std::vector<bool>> board(n,std::vector<bool>(n,false));
+			int total = 0;
+			totalNQueensHelper(0,n,board,total);
+			return total;
+		}
+	private:
+		void totalNQueensHelper(int row,int n, std::vector<std::vector<bool>>& board,int& total){
+			if(row == n){
+				total++;
+				return;
+			}
+			for(int i = 0; i < n; ++i){
+				if(board[row][i]) continue;
+				board[row][i] = true;
+				std::vector<std::vector<int>> frags; 
+				//列
+				for(int l = row + 1; l < n; ++l){
+					if(board[l][i]) continue;
+					board[l][i] = true;
+					frags.push_back({l,i});
+				}
+				//左下
+				for(int h = row + 1,l = i - 1; h < n && l >= 0; ++h,--l){
+					if(board[h][l]) continue;
+					board[h][l] = true;
+					frags.push_back({h,l});
+				}
+				//右下
+				for(int h = row + 1,l = i + 1; h < n && l < n; ++h,++l){
+					if(board[h][l]) continue;
+					board[h][l] = true;
+					frags.push_back({h,l});
+				}
+				totalNQueensHelper(row + 1,n,board,total);
+
+				board[row][i] = false;
+				for(auto frag : frags){
+					board[frag[0]][frag[1]] = false;
+				}
+			}
+		}
 
 	};
 }
