@@ -1313,6 +1313,63 @@ namespace Solution {
 			return result;
 		}
 
+		//061-旋转链表 https://leetcode.com/problems/rotate-list/
+		ListNode* rotateRight(ListNode* head, int k) {
+			if(!head || !head->next || k == 0) return head;
+			ListNode* cur = head;
+			int len = 0;
+			while(cur){
+				len++;
+				cur = cur->next;
+			}
+			k %= len;
+			if(k == 0) return head;
+			ListNode* slow = head;
+			ListNode* fast = head;
+			for(int i = 0; i < k; ++i){
+				fast = fast->next;
+			}
+			while(fast->next){
+				slow = slow->next;
+				fast = fast->next;
+			}
+			fast->next = head;
+			head = slow->next;
+			slow->next = nullptr;
+			return head;
+		}
+
+		//062-不同路径 https://leetcode.com/problems/unique-paths/
+		int uniquePaths(int m, int n) {
+			std::vector<int> dp(n,1);
+			for(int i = 1; i < m; ++i){
+				for(int j = 1; j < n; ++j){
+					dp[j] = dp[j - 1] + dp[j];
+				}
+			}
+			return dp[n - 1];
+		}
+
+		//063-不同路径 II https://leetcode.com/problems/unique-paths-ii/
+		int uniquePathsObstacles(std::vector<std::vector<int>>& obstacleGrid) {
+			int m = obstacleGrid.size();
+			int n = obstacleGrid[0].size();
+			std::vector<int> dp(n,0);
+			for(int i = 0; i < n; ++i){
+				if(obstacleGrid[0][i] == 1) break;
+				else dp[i] = 1;
+			}
+
+			for(int i = 1; i < m; ++i){
+				for(int j = 0; j < n; ++j){
+					if(obstacleGrid[i][j] == 1) dp[j] = 0;
+					else if(j > 0) dp[j] = dp[j - 1] + dp[j];
+				}
+			}
+			return dp[n - 1];
+		}
+
+
 
 	};
 }
