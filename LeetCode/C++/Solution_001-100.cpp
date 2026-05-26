@@ -1152,6 +1152,168 @@ namespace Solution {
 			}
 		}
 
+	public:
+		//053-最大子序和 https://leetcode.com/problems/maximum-subarray/
+		int maxSubArray(std::vector<int>& nums) {
+			int maxSum = nums[0];
+			int curSum = nums[0];
+			for(int i = 1; i < nums.size(); ++i){
+				curSum = std::max(curSum + nums[i],nums[i]);
+				maxSum = std::max(maxSum,curSum);
+			}
+			return maxSum;
+		}
+
+		//054-旋转矩阵 https://leetcode.com/problems/spiral-matrix/
+		std::vector<int> spiralOrder(std::vector<std::vector<int>>& matrix) {
+			int left = 0,right = matrix.size() - 1;
+			int top = 0,bottom = matrix[0].size() - 1;
+			std::vector<int> result;
+			while(left <= right && top <= bottom){
+				for(int i = left; i <= right; ++i){
+					result.push_back(matrix[top][i]);
+				}
+				top++;
+				for(int i = top; i <= bottom; ++i){
+					result.push_back(matrix[i][right]);
+				}
+				right--;
+				for(int i = right; i >= left; --i){
+					result.push_back(matrix[bottom][i]);
+				}
+				bottom--;
+				for(int i = bottom; i >= top; --i){
+					result.push_back(matrix[i][left]);
+				}
+				left++;
+			}
+			return result;
+		}
+
+		//055-跳跃游戏 https://leetcode.com/problems/jump-game/
+		bool canJump(std::vector<int>& nums) {
+			int maxReach = 0;
+			for(int i = 0; i < nums.size(); ++i){
+				if(maxReach < i) return false;
+				maxReach = std::max(maxReach,i + nums[i]);
+				if(maxReach >= nums.size() - 1) return true;
+			}
+			return false;
+		}
+
+		//056-合并区间 https://leetcode.com/problems/merge-intervals/
+		std::vector<std::vector<int>> merge(std::vector<std::vector<int>>& intervals) {
+			sort(intervals.begin(),intervals.end(),[](const std::vector<int>& a, const std::vector<int>& b){
+				return a[0] < b[0];
+			});
+			int targetIndex = 0;
+			int curIndex = 1;
+			while(curIndex < intervals.size()){
+				if(intervals[curIndex][0] <= intervals[targetIndex][1]){
+					intervals[targetIndex][1] = std::max(intervals[targetIndex][1],intervals[curIndex][1]);
+				}
+				else{
+					++targetIndex;
+					intervals[targetIndex] = std::move(intervals[curIndex]);
+				}
+				++curIndex;
+			}
+			intervals.resize(targetIndex + 1);
+			return intervals;
+		}
+
+		//057-插入区间 https://leetcode.com/problems/insert-interval/
+		std::vector<std::vector<int>> insert(std::vector<std::vector<int>>& intervals, std::vector<int>& newInterval) {
+			std::vector<std::vector<int>> result;
+			int i = 0;
+			bool isInserted = false;
+			while(i < intervals.size()){
+				//处理之前的区间
+				if(intervals[i][1] < newInterval[0]){
+					result.push_back(intervals[i]);
+					++i;
+					continue;
+				}
+				//处理合并的
+				if(intervals[i][0] <= newInterval[1]){
+					newInterval[0] = std::min(newInterval[0],intervals[i][0]);
+					newInterval[1] = std::max(newInterval[1],intervals[i][1]);
+					++i;
+					continue;
+				}
+
+				if(!isInserted){
+					result.push_back(newInterval);
+					isInserted = true;
+				}
+
+				//处理剩余的
+				result.push_back(intervals[i]);
+				++i;
+			}
+			if(!isInserted){
+				result.push_back(newInterval);
+			}
+			return result;
+		}
+
+		//058-最后一个单词的长度 https://leetcode.com/problems/length-of-last-word/
+		int lengthOfLastWord(std::string s) {
+			return s.rfind(' ') == std::string::npos ? s.size() : s.size() - s.rfind(' ') - 1;
+		}
+
+		//059-螺旋矩阵 https://leetcode.com/problems/spiral-matrix-ii/
+		std::vector<std::vector<int>> generateMatrix(int n) {
+			std::vector<std::vector<int>> result(n,std::vector<int>(n,0));
+			int left = 0,right = n - 1;
+			int top = 0,bottom = n - 1;
+			int curNum = 1;
+			while(left <= right && top <= bottom){
+				for(int i = left; i <= right; ++i){
+					result[top][i] = curNum++;
+				}
+				top++;
+				for(int i = top; i <= bottom; ++i){
+					result[i][right] = curNum++;
+				}
+				right--;
+				for(int i = right; i >= left; --i){
+					result[bottom][i] = curNum++;
+				}
+				bottom--;
+				for(int i = bottom; i >= top; --i){
+					result[i][left] = curNum++;
+				}
+				left++;
+			}
+			return result;
+		}
+
+		//060-排列序列 https://leetcode.com/problems/permutation-sequence/
+		std::string getPermutation(int n, int k) {
+			std::vector<int> nums(n);
+			std::vector<int> factorials(n,1);
+			for(int i = 0; i < n; ++i){
+				nums[i] = i + 1;
+			}
+			for(int i = 1; i < n; ++i){
+				factorials[i] = i * factorials[i - 1];
+			}
+			k--;
+			std::string result;
+			result.reserve(n);
+			while(n > 0){
+				int index = k / factorials[n - 1];
+				int remainder = k % factorials[n - 1];
+				result.push_back(nums[index] + '0');
+				nums.erase(nums.begin() + index);
+				k = remainder;
+				n--;
+			}
+			return result;
+		}
+
+
 	};
 }
 
