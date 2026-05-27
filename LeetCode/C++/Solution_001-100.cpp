@@ -1369,7 +1369,59 @@ namespace Solution {
 			return dp[n - 1];
 		}
 
+		//064-最小路径和 https://leetcode.com/problems/minimum-path-sum/
+		int minPathSum(std::vector<std::vector<int>>& grid) {
+			int m = grid.size();
+			int n = grid[0].size();
+			std::vector<int> dp(n,0);
+			for(int i = 0; i < m; ++i){
+				for(int j = 0; j < n; ++j){
+					if(i == 0 || j == 0) dp[j] = grid[i][j];
+					else dp[j] = std::min(dp[j - 1],dp[j]) + grid[i][j];
+				}
+			}
+			return dp[n - 1];
+		}
 
+		//065-有效数字 https://leetcode.com/problems/valid-number/
+		bool isNumber(std::string s) {
+			return false;
+		}
+
+		//066-加一 https://leetcode.com/problems/plus-one/
+		std::vector<int> plusOne(std::vector<int>& digits) {
+			int carry = 1;
+			for(int i = digits.size() - 1; i >= 0; --i){
+				int sum = digits[i] + carry;
+				digits[i] = sum % 10;
+				carry = sum / 10;
+				if(carry == 0) break;
+			}
+			if(carry == 1) digits.insert(digits.begin(),1);
+			return digits;
+		}
+
+		//067-二进制求和 https://leetcode.com/problems/add-binary/
+		std::string addBinary(std::string a, std::string b) {
+			int aIndex = a.length() - 1;
+			int bIndex = b.length() - 1;
+			int carry = 0;
+			std::string result;
+			while(aIndex >= 0 || bIndex >= 0 || carry == 1){
+				int sum = carry;
+				if(aIndex >= 0){
+					if(a[aIndex] == '1') sum++;
+					aIndex--;
+				}
+				if(bIndex >= 0){
+					if(b[bIndex] == '1') sum++;
+					bIndex--;
+				}
+				carry = sum / 2;
+				result.push_back(sum % 2 + '0');
+			}
+			return result;
+		}
 
 	};
 }
