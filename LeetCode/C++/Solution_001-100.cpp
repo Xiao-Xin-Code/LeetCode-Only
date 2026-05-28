@@ -34,8 +34,8 @@ namespace Solution {
 			if(l1 == nullptr) return l2;
 			if(l2 == nullptr) return l1;
 			int carry = 0;
-			ListNode* head = nullptr;
-			ListNode* tail = nullptr;
+			ListNode dummy;
+			ListNode* tail = &dummy;
 			while(l1 || l2 || carry != 0){
 				int sum = carry;
 				if(l1){
@@ -48,15 +48,10 @@ namespace Solution {
 				}
 				carry = sum/10;
 				sum %= 10;
-				if(head == nullptr){
-					head = new ListNode(sum);
-					tail = head;
-				}else{
-					tail->next = new ListNode(sum);
-					tail = tail->next;
-				}
+				tail->next = new ListNode(sum);
+				tail = tail->next;
 			}
-			return head;
+			return dummy.next;
 		}
 
 		//003-无重复字符的最长子串 https://leetcode.com/problems/longest-substring-without-repeating-characters/
