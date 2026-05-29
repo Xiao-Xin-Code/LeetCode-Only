@@ -57,11 +57,11 @@ namespace Solution {
 		//003-无重复字符的最长子串 https://leetcode.com/problems/longest-substring-without-repeating-characters/
 		int lengthOfLongestSubstring(std::string s) {
 			if(s.empty()) return 0;
-			if(s.size() == 1) return 1;
+			if(s.length() == 1) return 1;
 			std::unordered_map<char, int> charindex;
 			int left = 0, right = 0;
 			int max_length = 0;
-			for(int i = 0; i < s.size(); ++i){
+			for(int i = 0; i < s.length(); ++i){
 				auto it = charindex.find(s[i]);
 				if(it != charindex.end() && it->second >= left){
 					left = it->second + 1;
@@ -1416,6 +1416,37 @@ namespace Solution {
 				result.push_back(sum % 2 + '0');
 			}
 			return result;
+		}
+
+		//068-文本左右对齐 https://leetcode.com/problems/text-justification/
+		std::vector<std::string> fullJustify(std::vector<std::string>& words, int maxWidth) {
+			return {};
+		}
+
+		//069- x 的平方根 https://leetcode.com/problems/sqrtx/
+		int mySqrt(int x) {
+			//r = (r + x / r) / 2; 牛顿迭代法
+			if(x == 0 || x == 1) return x;
+			int l = 2,r = x / 2;
+			while(l <= r){
+				int mid = (l + r) / 2;
+				if(mid == x / mid) return mid;
+				else if(mid > x / mid) r = mid - 1;
+				else l = mid + 1;
+			}
+			return r;
+		}
+
+		//070-爬楼梯 https://leetcode.com/problems/climbing-stairs/
+		int climbStairs(int n) {
+			std::vector<int> dp{1,1,2};
+			if(n <= 2) return dp[n];
+			for(int i = 3; i <= n; ++i){
+				dp[0] = dp[1];
+				dp[1] = dp[2];
+				dp[2] = dp[0] + dp[1];
+			}
+			return dp[2];
 		}
 
 	};
