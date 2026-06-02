@@ -59,15 +59,14 @@ namespace Solution {
 			if(s.empty()) return 0;
 			if(s.length() == 1) return 1;
 			std::unordered_map<char, int> charindex;
-			int left = 0, right = 0;
+			int left = 0;
 			int max_length = 0;
-			for(int i = 0; i < s.length(); ++i){
-				auto it = charindex.find(s[i]);
+			for(int right = 0; right < s.length(); ++right){
+				auto it = charindex.find(s[right]);
 				if(it != charindex.end() && it->second >= left){
 					left = it->second + 1;
 				}
-				charindex[s[i]] = i;
-				right = i;
+				charindex[s[right]] = right;
 				max_length = std::max(max_length, right - left + 1);
 			}
 			return max_length;
@@ -121,46 +120,44 @@ namespace Solution {
 		//这样就计算出当前I的回文半径，
 		//之后就是更新数据：为了让后续的遍历尽可能使用到对称性，所以我们应该保持让R尽量向后扩展，也就有了当前I的右边界超出原本的记录，就更新当前记录的中心与半径
 		std::string longestPalindrome(std::string s) {
-			if(s.empty()||s.size() == 1) return s;
-			std::string t = "$#";
+			if(s.empty()||s.length() == 1) return s;
+			int length = 2 * s.length() + 1;
+			std::string t;
+			t.reserve(length);
+			t.push_back('#');
 			for(char c : s){
-				t += c;
-				t += "#";
+				t.push_back(c);
+				t.push_back('#');
 			}
-			t += "@";
-			int length = t.length();
-			std::vector<int> p(length, 0);
-			int center = 0,right = 0;
+			int center = 0, right = 0;
 			int max_center = 0;
-			int max_length = 0;
+			std::vector<int> p(length);
 			for(int i = 0; i < length; ++i){
-				if(i < right){
-					p[i] = std::min(right - i, p[2 * center - i]);
-				}
-				else{
+				if(i < right)
+					p[i] = std::min(right - i, p[2*center - i]);
+				else
 					p[i] = 1;
+				while(i - p[i] >= 0 && i + p[i] < length && t[i - p[i]] == t[i + p[i]]){
+					++p[i];
 				}
-				while(i-p[i] >= 0 && i+p[i] < length && t[i-p[i]] == t[i+p[i]]){
-					p[i]++;
-				}
-				if(i+p[i] > right){
+				if(i + p[i] > right){
 					right = i + p[i];
 					center = i;
 				}
-				if(p[i] > max_length){
-					max_length = p[i];
+				if(p[i] > p[max_center]){
 					max_center = i;
 				}
 			}
+			int max_length = p[max_center];
 			return s.substr((max_center - max_length + 1) / 2, max_length - 1);
 		}
 
 		//006-Z字形变换 https://leetcode.com/problems/zigzag-conversion/
 		std::string convert(std::string s, int numRows) {
 			if(s.empty()||numRows == 1) return s;
-			std::vector<std::string> rows(numRows, "");
+			std::vector<std::string> rows(numRows);
 			int cycle = (numRows - 1) * 2;
-			for(int i = 0; i < s.size(); ++i){
+			for(int i = 0; i < s.length(); ++i){
 				int offset = i % cycle;
 				int index = offset < numRows ? offset : cycle - offset;
 				rows[index] += s[i];
@@ -189,35 +186,23 @@ namespace Solution {
 		//008-字符串转换整数 (atoi) https://leetcode.com/problems/string-to-integer-atoi/
 		int myAtoi(std::string str) {
 			if(str.empty()) return 0;
+			int i = 0;
+			while(i < str.length() && str[i] == ' '){
+				++i;
+			}
+			if(i == str.length()) return 0;
 			int sign = 1;
+			if(str[i] == '+' || str[i] == '-'){
+				sign = str[i] == '-' ? -1 : 1;
+				++i;
+			}
 			int result = 0;
-			bool isBegin = false;
-			for(int i = 0; i < str.size(); ++i){
-				if(str[i] >= '0' && str[i] <= '9'){
-					isBegin = true;
-					int pop = str[i] - '0';
-					if(sign == 1 && result > (INT_MAX - pop) / 10) return INT_MAX;
-					if(sign == -1 && -result < (INT_MIN + pop) / 10) return INT_MIN;
-					result = result * 10 + pop;
-				}
-				else if(i == 0){
-					if(str[i] == '+' || str[i] == '-'){
-						sign = str[i] == '-' ? -1 : 1;
-						isBegin = true;
-					}
-					else if(str[i] == ' '){
-						continue;
-					}
-					else{
-						break;
-					}
-				}
-				else if(!isBegin && str[i] == ' '){
-					continue;
-				}
-				else{
-					break;
-				}
+			while(i < str.length() && str[i] >= '0' && str[i] <= '9'){
+				int pop = str[i] - '0';
+				if(sign == 1 && result > (INT_MAX - pop) / 10) return INT_MAX;
+				if(sign == -1 && -result < (INT_MIN + pop) / 10) return INT_MIN;
+				result = result * 10 + pop;
+				++i;
 			}
 			return result * sign;
 		}
@@ -225,7 +210,8 @@ namespace Solution {
 		//009-回文数 https://leetcode.com/problems/palindrome-number/
 		bool isPalindrome(int x) {
 			if(x < 0) return false;
-			if(x == 0) return true;
+			if(x < 10) return true;
+			if(x % 10 == 0) return false;
 			int right = 0;
 			while(x > right){
 				right = right * 10 + x % 10;
@@ -1448,6 +1434,114 @@ namespace Solution {
 			}
 			return dp[2];
 		}
+
+		//071-简化路径 https://leetcode.com/problems/simplify-path/
+		std::string simplifyPath(std::string path) {
+			std::string cur = "";
+			std::stack<std::string> stack;
+			for(int i = 0; i < path.length(); ++i){
+				if(path[i] == '/'){
+					if(cur == ".") continue;
+					else if(cur == ".."){
+						if(!stack.empty()) stack.pop();
+					}
+				}
+				else{
+					cur.push_back(path[i]);
+				}
+			}
+			if(cur != "") stack.push(cur);
+			std::string result = "";
+			while(!stack.empty()){
+				result = "/" + stack.top() + result;
+				stack.pop();
+			}
+			if(result == "") result = "/";
+			return result;
+		}
+
+		//072-编辑距离 https://leetcode.com/problems/edit-distance/
+		std::string editDistance(std::string s1, std::string s2) {
+			return "";
+		}
+
+		//073-矩阵置零 https://leetcode.com/problems/set-matrix-zeroes/
+		void setZeroes(std::vector<std::vector<int>>& matrix) {
+			int m = matrix.size();
+			int n = matrix[0].size();
+			bool isRowZero = false;
+			bool isColZero = false;
+			for(int i = 0; i < m; ++i){
+				if(matrix[i][0] == 0) {
+					isColZero = true;
+					break;
+				}
+			}
+			for(int i = 0; i < n; ++i){
+				if(matrix[0][i] == 0) {
+					isRowZero = true;
+					break;
+				}
+			}
+			for(int i = 1; i < m; ++i){
+				for(int j = 1; j < n; ++j){
+					if(matrix[i][j] == 0){
+						matrix[i][0] = 0;
+						matrix[0][j] = 0;
+					}
+				}
+			}
+			for(int i = 1; i < m; ++i){
+				for(int j = 1; j < n; ++j){
+					if(matrix[i][0] == 0 || matrix[0][j] == 0) matrix[i][j] = 0;
+				}
+			}
+			if(isColZero){
+				for(int i = 0; i < m; ++i){
+					matrix[i][0] = 0;
+				}
+			}
+			if(isRowZero){
+				for(int i = 0; i < n; ++i){
+					matrix[0][i] = 0;
+				}
+			}
+		}
+
+		//074-搜索二维矩阵 https://leetcode.com/problems/search-a-2d-matrix/
+		bool searchMatrix(std::vector<std::vector<int>>& matrix, int target) {
+			int m = matrix.size();
+			int n = matrix[0].size();
+			int l = 0,r = m * n - 1;
+			while(l <= r){
+				int mid = (l + r) / 2;
+				int row = mid / n;
+				int col = mid % n;
+				if(matrix[row][col] == target) return true;
+				else if(matrix[row][col] > target) r = mid - 1;
+				else l = mid + 1;
+			}
+			return false;
+		}
+
+		//075-颜色分类 https://leetcode.com/problems/sort-colors/
+		void sortColors(std::vector<int>& nums) {
+			int l = 0,r = nums.size() - 1;
+			int i = 0;
+			while(i <= r){
+				if(nums[i] == 0){
+					std::swap(nums[i],nums[l]);
+					l++;
+					i++;
+				}
+				else if(nums[i] == 2){
+					std::swap(nums[i],nums[r]);
+					r--;
+				}
+				else i++;
+			}
+		}
+
 
 	};
 }
