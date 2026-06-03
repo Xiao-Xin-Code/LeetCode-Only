@@ -224,6 +224,16 @@ namespace Solution {
 		
 		//010-正则表达式匹配 https://leetcode.com/problems/regular-expression-matching/
 		bool isMatch(std::string s, std::string p) {
+
+			bool dp[s.length() + 1][p.length() + 1];
+			dp[0][0] = true;
+			for(int i = 0; i < s.length(); ++i){
+				for(int j = 0; j < p.length(); ++j){
+
+				}
+
+			}
+
 			return false;
 		}
 		
